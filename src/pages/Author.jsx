@@ -10,15 +10,12 @@ const Author = () => {
   useEffect(() => {
     const fetchAuthorData = async () => {
       try {
-        const res = await fetch(`https://us-central1-nft-cloud-functions.cloudfunctions.net/author?author=${authorId}`);
-        const contentType = res.headers.get("content-type");
+        const res = await fetch("https://us-central1-nft-cloud-functions.cloudfunctions.net/topSellers");
+        const authors = await res.json();
+        const author = authors.find(a => a.authorId === Number(authorId));
 
-        if (!res.ok || !contentType?.includes("application/json")) {
-          throw new Error("Bad or non-JSON response");
-        }
-
-        const data = await res.json();
-        setAuthorData(data);
+        if (!author) throw new Error("Author not found");
+        setAuthorData(author);
       } catch (err) {
         console.error("Failed to fetch author data:", err);
         setError(true);

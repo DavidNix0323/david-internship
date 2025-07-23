@@ -21,20 +21,27 @@ const ItemDetails = () => {
       }
     };
 
-    fetchItem();
+    if (nftId) {
+      fetchItem();
+    }
   }, [nftId]);
 
-  if (!itemData) return null; // Optional: add skeleton shimmer for hydration
+  if (!itemData) return null;
+
+  // 🚨 Trap for undefined authorId rendering
+  if (!itemData.authorId || itemData.authorId === "undefined") {
+    console.error("🚨 ItemDetails → authorId missing!", itemData);
+  }
+
+  const getAuthorRoute = (id) => (id ? `/author/${id}` : "#");
 
   return (
     <div id="wrapper">
       <div className="no-bottom no-top" id="content">
-        <div id="top"></div>
-
         <section aria-label="section" className="mt90 sm-mt-0">
           <div className="container">
             <div className="row">
-              {/* 🔻 NFT Image */}
+              {/* NFT Image */}
               <div className="col-md-6 text-center">
                 <img
                   src={itemData.nftImage}
@@ -43,7 +50,7 @@ const ItemDetails = () => {
                 />
               </div>
 
-              {/* 🔻 Item Details */}
+              {/* Item Details */}
               <div className="col-md-6">
                 <div className="item_info">
                   <h2>{itemData.title}</h2>
@@ -61,13 +68,13 @@ const ItemDetails = () => {
 
                   <p>{itemData.description || "No description provided."}</p>
 
-                  {/* 🔻 Owner */}
+                  {/* Owner */}
                   <div className="d-flex flex-row">
                     <div className="mr40">
                       <h6>Owner</h6>
                       <div className="item_author">
                         <div className="author_list_pp">
-                          <Link to={`/author/${itemData.authorId}`}>
+                          <Link to={getAuthorRoute(itemData.authorId)}>
                             <img
                               className="lazy"
                               src={itemData.authorImage}
@@ -77,7 +84,7 @@ const ItemDetails = () => {
                           </Link>
                         </div>
                         <div className="author_list_info">
-                          <Link to={`/author/${itemData.authorId}`}>
+                          <Link to={getAuthorRoute(itemData.authorId)}>
                             {itemData.authorName}
                           </Link>
                         </div>
@@ -85,13 +92,13 @@ const ItemDetails = () => {
                     </div>
                   </div>
 
-                  {/* 🔻 Creator + Price */}
+                  {/* Creator + Price */}
                   <div className="de_tab tab_simple">
                     <div className="de_tab_content">
                       <h6>Creator</h6>
                       <div className="item_author">
                         <div className="author_list_pp">
-                          <Link to={`/author/${itemData.authorId}`}>
+                          <Link to={getAuthorRoute(itemData.authorId)}>
                             <img
                               className="lazy"
                               src={itemData.authorImage}
@@ -101,7 +108,7 @@ const ItemDetails = () => {
                           </Link>
                         </div>
                         <div className="author_list_info">
-                          <Link to={`/author/${itemData.authorId}`}>
+                          <Link to={getAuthorRoute(itemData.authorId)}>
                             {itemData.authorName}
                           </Link>
                         </div>
