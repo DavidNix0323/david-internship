@@ -1,5 +1,8 @@
+// src/components/explore/ExploreItems.jsx
+
 import React, { useEffect, useState } from "react";
-import AuthorLink from "../utils/AuthorLink"; // adjust path if needed
+import AuthorLink from "../utils/AuthorLink";
+import Countdown from "../home/Countdown";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
@@ -8,14 +11,17 @@ const isValidAuthorId = (id) =>
 
 const ExploreItems = () => {
   const [items, setItems] = useState([]);
-  const [filter, setFilter] = useState("");
+  const [filter, setFilter] = useState("likes_high_to_low");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchItems = async () => {
+      setLoading(true);
       try {
         const res = await axios.get(
-          "https://us-central1-nft-cloud-functions.cloudfunctions.net/explore"
+          `https://us-central1-nft-cloud-functions.cloudfunctions.net/explore${
+            filter ? `?filter=${filter}` : ""
+          }`
         );
         setItems(res.data);
       } catch (err) {
@@ -26,120 +32,190 @@ const ExploreItems = () => {
     };
 
     fetchItems();
-  }, []);
+  }, [filter]);
 
   const handleFilterChange = (e) => setFilter(e.target.value);
 
-  const getSortedItems = () => {
-    if (filter === "price_low_to_high") {
-      return [...items].sort((a, b) => a.price - b.price);
-    }
-    if (filter === "price_high_to_low") {
-      return [...items].sort((a, b) => b.price - a.price);
-    }
-    if (filter === "likes_high_to_low") {
-      return [...items].sort((a, b) => b.likes - a.likes);
-    }
-    return items;
+  const wrapperStyle = {
+    display: "flex",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    gap: "20px",
   };
 
-  const skeletons = Array(8).fill(null);
+  const cardStyle = {
+    width: "100%",
+    maxWidth: "280px",
+    background: "#fff",
+    border: "1px solid #ddd",
+    borderRadius: "8px",
+    padding: "12px",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
+    display: "flex",
+    flexDirection: "column",
+    flex: "1 1 240px",
+  };
 
   return (
     <>
-      <div className="mb-3">
-        <select id="filter-items" value={filter} onChange={handleFilterChange}>
-          <option value="">Default</option>
+      <div
+        style={{
+          marginBottom: "16px",
+          display: "flex",
+          justifyContent: "flex-start",
+        }}
+      >
+        <select
+          id="filter-items"
+          value={filter}
+          onChange={handleFilterChange}
+          style={{
+            padding: "8px 12px",
+            borderRadius: "6px",
+            border: "1px solid #ccc",
+            fontSize: "14px",
+            width: "100%",
+            maxWidth: 220,
+          }}
+        >
+          <option value="likes_high_to_low">Most liked</option>
           <option value="price_low_to_high">Price, Low to High</option>
           <option value="price_high_to_low">Price, High to Low</option>
-          <option value="likes_high_to_low">Most liked</option>
         </select>
       </div>
 
-      <div className="row">
-        {loading
-          ? skeletons.map((_, i) => (
+      <div style={wrapperStyle}>
+        {loading &&
+          Array(8)
+            .fill(null)
+            .map((_, i) => (
               <div
                 key={i}
-                className="d-item col-lg-3 col-md-6 col-sm-6 col-xs-12 animate-pulse"
-              >
-                <div className="nft__item">
-                  <div className="author_list_pp">
-                    <div className="skeleton-box" style={{ width: 50, height: 50, borderRadius: "50%" }} />
-                  </div>
-                  <div className="nft__item_wrap">
-                    <div className="skeleton-box" style={{ width: "100%", height: 200 }} />
-                  </div>
-                  <div className="nft__item_info">
-                    <div className="skeleton-box" style={{ width: "60%", height: 20, marginBottom: 10 }} />
-                    <div className="skeleton-box" style={{ width: "30%", height: 16 }} />
-                  </div>
-                </div>
-              </div>
-            ))
-          : getSortedItems().map((item) => (
-              <div
-                key={item.nftId}
-                className="d-item col-lg-3 col-md-6 col-sm-6 col-xs-12"
-              >
-                <div className="nft__item">
-                  <div className="author_list_pp">
-                    {isValidAuthorId(item.authorId) ? (
-                      <AuthorLink id={item.authorId}>
-                        <img
-                          className="lazy"
-                          src={item.authorImage}
-                          alt={item.authorName}
-                        />
-                        <i className="fa fa-check"></i>
-                      </AuthorLink>
-                    ) : (
-                      <span className="text-muted">Unknown Author</span>
-                    )}
-                  </div>
-
-                  {item.expiryDate && (
-                    <div className="de_countdown">{item.expiryDate}</div>
-                  )}
-
-                  <div className="nft__item_wrap">
-                    <div className="nft__item_extra">
-                      <div className="nft__item_buttons">
-                        <button>Buy Now</button>
-                        <div className="nft__item_share">
-                          <h4>Share</h4>
-                          <a href="#"><i className="fa fa-facebook fa-lg"></i></a>
-                          <a href="#"><i className="fa fa-twitter fa-lg"></i></a>
-                          <a href="#"><i className="fa fa-envelope fa-lg"></i></a>
-                        </div>
-                      </div>
-                    </div>
-                    <Link to={`/item-details/${item.nftId}`}>
-                      <img
-                        src={item.nftImage}
-                        className="lazy nft__item_preview"
-                        alt={item.title}
-                      />
-                    </Link>
-                  </div>
-
-                  <div className="nft__item_info">
-                    <Link to={`/item-details/${item.nftId}`}>
-                      <h4>{item.title}</h4>
-                    </Link>
-                    <div className="nft__item_price">{item.price} ETH</div>
-                    <div className="nft__item_like">
-                      <i className="fa fa-heart"></i>
-                      <span>{item.likes}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                style={{
+                  ...cardStyle,
+                  background: "#eee",
+                  height: "360px",
+                }}
+              />
             ))}
+
+        {!loading &&
+          items.length > 0 &&
+          items.map((item) => (
+            <div key={item.nftId} style={cardStyle}>
+              {/* Author Info */}
+              <div
+                style={{
+                  marginBottom: "10px",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                {isValidAuthorId(item.authorId) ? (
+                  <AuthorLink id={item.authorId}>
+                    <img
+                      src={item.authorImage}
+                      alt={item.authorName || "Author"}
+                      style={{
+                        borderRadius: "50%",
+                        width: 40,
+                        height: 40,
+                        objectFit: "cover",
+                      }}
+                    />
+                    <i
+                      className="fa fa-check"
+                      style={{ marginLeft: "6px", color: "#39f" }}
+                    ></i>
+                  </AuthorLink>
+                ) : (
+                  <span style={{ color: "#666" }}>Unknown Author</span>
+                )}
+              </div>
+
+              {/* NFT Image + Countdown badge */}
+              <div style={{ position: "relative", width: "100%", marginBottom: "10px" }}>
+                {item.expiryDate && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "-20px",
+                      right: "-25px",
+                      backgroundColor: "#fee",
+                      padding: "2px 6px",
+                      borderRadius: "12px",
+                      fontSize: "13px",
+                      fontWeight: "bold",
+                      color: "#f00",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      whiteSpace: "nowrap",
+                      maxWidth: "fit-content",
+                      zIndex: 2,
+                    }}
+                  >
+                    <Countdown expiryDate={new Date(item.expiryDate).getTime()} />
+                  </div>
+                )}
+                <Link to={`/item-details/${item.nftId}`}>
+                  <img
+                    src={item.nftImage}
+                    alt={item.title}
+                    style={{
+                      width: "100%",
+                      height: "200px",
+                      objectFit: "cover",
+                      borderRadius: "6px",
+                    }}
+                  />
+                </Link>
+              </div>
+
+              {/* Title */}
+              <Link to={`/item-details/${item.nftId}`}>
+                <h4 style={{ fontSize: "16px", margin: "0 0 8px" }}>
+                  {item.title}
+                </h4>
+              </Link>
+
+              {/* Price & Likes */}
+              <div
+                style={{
+                  marginBottom: "6px",
+                  fontWeight: "bold",
+                  color: "#333",
+                }}
+              >
+                {item.price} ETH
+              </div>
+              <div style={{ fontSize: "14px", color: "#666" }}>
+                ❤️ {item.likes}
+              </div>
+            </div>
+          ))}
+
+        {!loading && items.length === 0 && (
+          <div style={{ textAlign: "center", width: "100%" }}>
+            <p style={{ color: "red", fontSize: "18px" }}>
+              🚫 Explore API returned no items. Check dev console for details.
+            </p>
+          </div>
+        )}
       </div>
 
-      <div className="col-md-12 text-center">
-        <Link to="#" id="loadmore" className="btn-main lead">
+      <div style={{ marginTop: "30px", textAlign: "center" }}>
+        <Link
+          to="#"
+          id="loadmore"
+          style={{
+            display: "inline-block",
+            padding: "10px 20px",
+            backgroundColor: "#333",
+            color: "#fff",
+            borderRadius: "4px",
+            textDecoration: "none",
+          }}
+        >
           Load more
         </Link>
       </div>
@@ -148,5 +224,4 @@ const ExploreItems = () => {
 };
 
 export default ExploreItems;
-
 
