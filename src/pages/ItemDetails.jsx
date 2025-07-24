@@ -8,16 +8,6 @@ const isValidAuthorId = (id) =>
 
 const ItemDetails = () => {
   const { nftId } = useParams();
-  import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import AuthorLink from "../components/utils/AuthorLink";
-import EthImage from "../images/ethereum.svg";
-
-const isValidAuthorId = (id) =>
-  id && String(id).toLowerCase() !== "undefined" && !isNaN(Number(id));
-
-const ItemDetails = () => {
-  const { nftId } = useParams();
   const [itemData, setItemData] = useState(null);
   const [creatorItems, setCreatorItems] = useState([]);
   const [error, setError] = useState(false);
