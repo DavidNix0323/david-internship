@@ -1,4 +1,4 @@
-// src/components/explore/ExploreItems.jsx
+
 
 import React, { useEffect, useState } from "react";
 import AuthorLink from "../utils/AuthorLink";
