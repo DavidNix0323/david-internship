@@ -54,6 +54,7 @@ const ExploreItems = () => {
     display: "flex",
     flexDirection: "column",
     flex: "1 1 240px",
+    transition: "transform 0.3s ease",
   };
 
   return (
@@ -102,7 +103,12 @@ const ExploreItems = () => {
         {!loading &&
           items.length > 0 &&
           items.map((item) => (
-            <div key={item.nftId} style={cardStyle}>
+            <div
+              key={item.nftId}
+              style={cardStyle}
+              onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.03)")}
+              onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+            >
               {/* Author Info */}
               <div
                 style={{
@@ -121,6 +127,16 @@ const ExploreItems = () => {
                         width: 40,
                         height: 40,
                         objectFit: "cover",
+                        transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                        cursor: "pointer",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = "scale(0.85)";
+                        e.currentTarget.style.boxShadow = "0 0 0 4px rgba(144, 79, 190, 0.8)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = "scale(1)";
+                        e.currentTarget.style.boxShadow = "none";
                       }}
                     />
                     <i
@@ -224,4 +240,3 @@ const ExploreItems = () => {
 };
 
 export default ExploreItems;
-
