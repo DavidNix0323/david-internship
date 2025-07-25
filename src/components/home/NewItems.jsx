@@ -3,7 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
-import Countdown from "./Countdown"; // Adjust if needed
+import Countdown from "./Countdown";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 const NewItems = () => {

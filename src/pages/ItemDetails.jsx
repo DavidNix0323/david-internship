@@ -126,7 +126,7 @@ const ItemDetails = () => {
                   </div>
 
                   {/* 🔻 Creator */}
-                  <h6>Creator</h6>
+                  <h6 style={{marginTop:"30px"}}>Creator</h6>
                   <div className="item_author">
                     <div className="author_list_pp">
                       {isValidAuthorId(itemData.creatorId) ? (
