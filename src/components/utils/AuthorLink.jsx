@@ -7,12 +7,11 @@ const AuthorLink = ({ id, children }) => {
     !isNaN(Number(id));
 
   if (!isValid) {
-    console.warn("🚨 Invalid authorId passed to AuthorLink:", id);
-    return <span>{children}</span>;
+    console.warn("🚨 AuthorLink received invalid authorId:", id);
+    return <span className="author-link-fallback">{children}</span>;
   }
 
-  return <Link to={`/author/${id}`}>{children}</Link>;
+  return <Link to={`/author/${id}`} className="author-link">{children}</Link>;
 };
 
 export default AuthorLink;
-
